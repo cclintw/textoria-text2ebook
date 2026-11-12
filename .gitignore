@@ -1,0 +1,19 @@
+# Track only the distributable Skill, the main README, and this allowlist.
+/*
+!/.gitignore
+!/README.md
+!/.agents/
+/.agents/*
+!/.agents/skills/
+/.agents/skills/*
+!/.agents/skills/textoria-text2ebook/
+
+# Generated files and local settings are not part of the Skill distribution.
+**/__pycache__/
+**/*.py[cod]
+**/.DS_Store
+**/.env
+**/.env.*
+**/.venv/
+**/node_modules/
+**/.pytest_cache/

@@ -1,0 +1,12 @@
+body { margin: 1.5em; font-family: serif; line-height: 1.8; }
+h1, h2, h3, h4, h5, h6 { line-height: 1.4; }
+p { margin: 0 0 .8em; }
+.text-unit p { text-indent: 2em; }
+.frontmatter p { text-indent: 0; }
+.cover { margin: 0; padding: 0; text-align: center; }
+.cover img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+nav ol { padding-left: 1.5em; }
+nav li { margin: .4em 0; }
+pre { white-space: pre-wrap; }
+table { border-collapse: collapse; }
+th, td { border: 1px solid; padding: .3em .5em; }
