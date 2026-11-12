@@ -87,12 +87,3 @@ PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_validate.py COLLECTIO
 保存 `state.json.reviews`，在章節／metadata／素材變更後只重啟受影響的核對步驟。原始資料缺失時，已有確認工作檔仍可支援下游；不能宣稱可重新執行必須讀原稿的階段。
 
 `textoria_migrate_paths.py` 是經驗證的 legacy `textoria/` 遷移工具，不適用直接將任意 digital-library 根目錄改名。不要因 skill 更名而自動執行。
-
-## 現有技術回歸檢查
-
-```text
-PYTHON .agents/skills/textoria-text2ebook/scripts/test_compact.py
-node .agents/skills/textoria-text2ebook/scripts/test_search.cjs SITE_DIRECTORY
-```
-
-另以 `PYTHON .agents/skills/textoria-text2ebook/scripts/test_chapter_review.py` 驗證來源保存、章節確認停點、舊 token 拒絕、修改後重審及 legacy 相容。另以 `PYTHON .agents/skills/textoria-text2ebook/scripts/test_metadata.py` 驗證 metadata 停點、角色、匯入、修訂、刪除、直接編輯與 canonical 同步。另以 `PYTHON .agents/skills/textoria-text2ebook/scripts/test_materials.py` 驗證接收、略過、更換保留、文字衝突、原件校驗與下游停點。另以 `PYTHON .agents/skills/textoria-text2ebook/scripts/test_epub.py` 驗證選用頁面、封裝、目錄參照、識別碼與失敗保存；偵測到專案驗證器設定時實際執行 EPUBCheck。直接開檔瀏覽器測試受工具政策限制時，保留普通 script 相容設計並報告限制，不繞過政策。

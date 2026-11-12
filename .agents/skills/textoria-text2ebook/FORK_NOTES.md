@@ -2,6 +2,10 @@
 
 This project-local fork uses one canonical structured checkpoint and compact stage state. Archive output contracts differ from the upstream multi-format layout.
 
+## 發布檔案範圍
+
+Skill 的 `scripts/` 保留製書、環境檢查與成果驗證程式。開發回歸測試腳本已移除，本機不另存 `tests/`；流程文件不再提供已移除的測試指令。`textoria_validate.py` 與 `textoria_validate_epub.py` 繼續用於實際成果檢查。
+
 ## 不依賴 SQLite 的製書流程
 
 網站、搜尋索引與 EPUB 直接使用 `intermediate/archive.json`。標準建置、網站重建、搜尋重建與預設驗證不建立或更新 SQLite；只有明確的 `build_sqlite`／`rebuild_database` 技術任務保留建庫能力。驗證器從 archive 取得章節與段落，檢查搜尋正文及連結；`--check-sqlite` 可額外核對資料庫。Runtime 就緒判斷不再要求 FTS5。既有資料庫保留，不隨重建刪除。
@@ -30,7 +34,7 @@ Automatic source copies, duplicate per-table JSON, CSV exports, separate review/
 
 ## Implementation
 
-The orchestrator supports individual stages and resuming saved collection settings. Export, database and site builders use the canonical checkpoint; validation checks the archive and reading/search links. SQLite integrity and FTS checks run only when explicitly requested. State summaries replace per-stage logs. The optional SQLite table model remains unchanged. `scripts/test_compact.py` exercises staged continuation, edited checkpoints, optional exports and validation failures using isolated temporary inputs.
+The orchestrator supports individual stages and resuming saved collection settings. Export, database and site builders use the canonical checkpoint; validation checks the archive and reading/search links. SQLite integrity and FTS checks run only when explicitly requested. State summaries replace per-stage logs. The optional SQLite table model remains unchanged.
 
 Changed modules: `textoria_build`, `textoria_common`, `textoria_utf8_converter`, `textoria_extract_text`, `textoria_clean_text`, `textoria_structure`, `textoria_export`, `textoria_build_sqlite`, `textoria_build_search`, `textoria_build_site`, and `textoria_validate`. The skill entrypoint and relevant workflow, input-resolution, cleaning, schema, theme, intent and file-contract references describe the compact layout.
 
@@ -60,7 +64,7 @@ Skill 識別名稱、目錄與新書預設 namespace 改為 `textoria-text2ebook
 
 建置入口在所有信心等級均先生成獨立目錄並停在章節確認，確認綁定目前全文及目錄 token；章節異動會失效，未確認不取代 canonical archive 或下游成果。程式碼區塊中的 Markdown 標題不作章節，修正多文件無標題段落的歸屬。確認命令僅保存結構並回傳 metadata 下一步。
 
-`test_chapter_review.py` 覆蓋高信心停點、舊 token／目錄異動拒絕、正文修正與章節移動、來源多版本、附件遺失、低信心修復及舊版書籍相容；原 checkpoint 回歸測試配合明確的測試用章節確認。Metadata／素材／EPUB 程式與 UI 合併仍為不同實作階段。
+Metadata／素材／EPUB 程式與 UI 合併仍為不同實作階段。
 
 ## 基本 Metadata 保存與確認實作
 
@@ -68,7 +72,7 @@ Skill 識別名稱、目錄與新書預設 namespace 改為 `textoria-text2ebook
 
 支援對話 patch、刪除、CSV、JSON、標記文字與 XLSX literal values 匯入；歧義資料、公式及舊 XLS 明確停止。使用標準函式庫讀取 XLSX，沒有新增依賴。保存上傳原件版本與校驗碼，保留人工修訂／刪除及確認狀態，不因重建重新推定。
 
-Metadata 確認與資料修改分開，直接修改 JSON 亦使舊確認失效。確認後同步 canonical archive，書名修正不改變既有正文目錄的確認，資料夾與 slug 不更名。確認命令只回傳素材下一步，未實作素材或 EPUB 整合。`test_metadata.py` 覆蓋新行為，原章節與建庫測試配合獨立的測試用 metadata 確認。
+Metadata 確認與資料修改分開，直接修改 JSON 亦使舊確認失效。確認後同步 canonical archive，書名修正不改變既有正文目錄的確認，資料夾與 slug 不更名。確認命令只回傳素材下一步，未實作素材或 EPUB 整合。
 
 ## 選用素材接收與保存實作
 
@@ -76,13 +80,13 @@ Metadata 確認與資料修改分開，直接修改 JSON 亦使舊確認失效�
 
 封面檢查實際 PNG／JPEG 格式、尺寸與 RGB 資訊；文字頁保留原副檔名、編碼與內容。不同內容更換須明確指定，原件版本與選擇歷史保留。明確的書名／署名差異等待決定，不自動修改文字或 metadata。Token 綁定素材與 metadata 版本；保存檔遺失或變更會阻止下游更新。
 
-未新增依賴，PNG 以標準函式庫檢查容器、壓縮資料與列資訊，JPEG 記錄 frame 檢查範圍，macOS 可另外使用系統 sips 查驗圖片資訊。`test_materials.py` 使用合成圖片與文字驗證行為，不處理使用者原有圖片。此階段不生成 EPUB，也不修改讀取器 UI。
+未新增依賴，PNG 以標準函式庫檢查容器、壓縮資料與列資訊，JPEG 記錄 frame 檢查範圍，macOS 可另外使用系統 sips 查驗圖片資訊。此階段不生成 EPUB，也不修改讀取器 UI。
 
 ## EPUB 生成與驗證
 
 `textoria_build_epub.py` 將已確認正文、metadata 與素材封裝為 EPUB，保留階層目錄與段落錨點，依實際圖片格式註冊封面，省略未提供的前置頁。`build_epub` 只建電子書；`build_fulltext_archive` 在網站檢查成功後同時建電子書。其他網站重建入口保留原有範圍。
 
-`textoria_validate_epub.py` 檢查 ZIP、XML、manifest、spine、參照與段落完整性，並依專案設定執行 EPUBCheck。識別碼持久保存；驗證失敗及輸入途中異動均不發布候選檔。`test_epub.py` 驗證前置確認、選用頁面、目錄、改名及失敗時保留成果。網站閱讀器 UI 尚未調整。
+`textoria_validate_epub.py` 檢查 ZIP、XML、manifest、spine、參照與段落完整性，並依專案設定執行 EPUBCheck。識別碼持久保存；驗證失敗及輸入途中異動均不發布候選檔。網站閱讀器 UI 尚未調整。
 
 ## 閱讀頁整合搜尋
 
