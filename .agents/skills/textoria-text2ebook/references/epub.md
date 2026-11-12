@@ -1,36 +1,42 @@
-# EPUB 製作與驗證
+# EPUB generation and validation
 
-## 執行入口
+## Entry points
 
-使用已確認的正文、章節、metadata 與素材。各確認停點不能由生成指令略過。`PYTHON` 為已就緒的專案虛擬環境 Python，`COLLECTION_ROOT` 為書籍工作目錄。
+Use confirmed text, chapters, metadata, and material decisions. Generation commands do not bypass the review checkpoints. Replace `PYTHON` with the verified interpreter and `COLLECTION_ROOT` with the actual collection path:
 
-```sh
+```text
+PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py --output COLLECTION_ROOT --task build_epub
+```
+
+`build_epub` generates only EPUB. `build_fulltext_archive` generates the website and, after successful website checks, EPUB. `rebuild_site` generates only the website. All use the canonical archive without creating SQLite.
+
+A successful result includes the actual EPUB path and validation result. A failed candidate does not replace an existing ebook.
+
+## Content and packaging
+
+- Reading order is cover, title page, copyright page, visible contents, and body. Include optional items only from supplied confirmed materials; do not invent pages or publication facts.
+- Keep the original JPEG/PNG cover bytes, correct MIME declaration, and image proportions, with a visible cover page.
+- Use hierarchical navigation, valid XHTML, and paragraph anchors. TXT and Markdown front matter are supported. Markdown inline images in body/front matter are currently rejected; resolve them explicitly rather than losing them or downloading resources silently.
+- The ZIP container begins with an uncompressed `mimetype` and includes container/package documents, manifest, spine, navigation, resources, and styles. Output uses `.epub`.
+- Keep the persistent identifier in `state.json` across rebuilds and title changes. Language and modification timestamps are managed internally; do not ask users to fill technical fields.
+- Write a candidate first. Publish it only after successful validation and verifying that inputs have not changed. Preserve untracked or externally modified EPUBs; use a safe hash-suffixed output name rather than silently overwriting them.
+
+## EPUBCheck resolution
+
+The validator resolves explicit `--epubcheck-jar` / `--java` parameters, `TEXTORIA_EPUBCHECK_JAR` / `TEXTORIA_JAVA`, project `.textoria-text2ebook/tools/epub-tools.json`, and available PATH tools in the implemented order. The configuration's `java` and `epubcheck_jar` values must be actual usable paths.
+
+If tools are already available, use them. New installation requires the [runtime approval](runtime.md); keep a complete official EPUBCheck distribution and dependencies in the project tool directory without changing system Java settings.
+
+To require official checking during generation:
+
+```text
 PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py --output COLLECTION_ROOT --task build_epub --require-epubcheck
 ```
 
-`build_epub` 只產生 EPUB；`build_fulltext_archive` 產生網站並在網站檢查成功後產生 EPUB。`rebuild_site` 仍只重建網站。成功結果包含實際 EPUB 路徑與驗證資訊，驗證失敗不取代既有電子書。
+To validate an existing ebook independently:
 
-## 內容與封裝
-
-- 依序排列封面、書名頁、版權頁、可見目錄、正文。選用頁面僅取自已確認素材；未提供時省略，不生成空頁或補寫出版資料。
-- 封面保留原始 PNG／JPEG 位元組，manifest 使用相應 MIME，另建立可見封面頁並保留比例。
-- 使用階層章節目錄、有效 XHTML 與段落錨點。文字頁支援 TXT／Markdown；內嵌圖片目前不支援，遇到圖片標記應先處理，不能默默遺失圖片或下載外部資源。
-- EPUB 使用 ZIP 容器，首項為未壓縮的 `mimetype`，包含 container、package、manifest、spine、導覽與樣式。副檔名為 `.epub`。
-- 識別碼保存於 `state.json`，改書名或重建仍沿用；語言與修改時間由程式管理。外部下載檔名可使用中文書名，內部資源採安全路徑。
-- 電子書先寫入候選檔，驗證成功且輸入未異動才發布。未追蹤或經外部修改的同名檔保留，另用雜湊後綴命名；不能安全命名時停止。
-
-## 驗證器設定
-
-依序使用明確參數 `--epubcheck-jar`／`--java`、環境變數 `TEXTORIA_EPUBCHECK_JAR`／`TEXTORIA_JAVA`、專案 `.textoria-text2ebook/tools/epub-tools.json`，以及可用的 PATH 驗證器。設定檔中的 `java`、`epubcheck_jar` 為實際可用的檔案路徑。
-
-工具已可用時直接使用；新增 Java／驗證器須遵守環境安裝授權。採專案工具目錄保存完整官方 EPUBCheck 發行包與相依函式庫，不更改系統 Java 設定。
-
-獨立檢查既有 EPUB：
-
-```sh
+```text
 PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_validate_epub.py BOOK.epub --project-root PROJECT --require-epubcheck
 ```
 
-內部檢查涵蓋封裝、XML、資源宣告、閱讀順序、目錄參照、圖片格式與段落完整性。EPUBCheck 的實際狀態、訊息與版本另行記錄；只有實際執行成功時 `compliance_verified` 才為真。未設定驗證器且未指定 `--require-epubcheck` 時，可生成經內部檢查的成果，但必須說明未通過官方驗證。正式宣稱 EPUBCheck 通過前，使用 `--require-epubcheck`。
-
-原始外掛快照保存在 `epub-reference/textoria-plugin/`，僅供來源比較，不能整套覆寫現行共用程式。
+Internal checks cover packaging, XML, resource declarations/references, reading order, navigation, supported image formats, and paragraph completeness. Official checker output and compliance status are reported separately. `compliance_verified` is true only after successful EPUBCheck execution. An internally validated ebook may be produced without configured EPUBCheck when it is not required, but report that official compliance was not verified. Never claim full EPUB 3 compliance from internal checks alone.

@@ -1,23 +1,28 @@
-# Text2Ebook 輸入辨識
+# Input and collection resolution
 
-## 書籍與檔案分類
+## Classify the request and files
 
-先辨識任務是討論、修改 skill，或實際製書；詢問能力不授權直接改檔。製書時查詢 `textoria-text2ebook/registry.json`，並相容查詢既有 `textoria-digital-library/registry.json`。沿用單一本既有書；多本時先解決目標，不能將新提及的不同書籍自動合併。
+Distinguish discussion, Skill maintenance, and actual book production. A capability question does not authorize writing collection data. For book tasks, inspect `textoria-text2ebook/registry.json` and, when present, `textoria-digital-library/registry.json`. Reuse the identified collection. If several books could match, resolve the target rather than merging them.
 
-正文接受 TXT、MD、HTML／HTM、指定正文欄位的 CSV。Metadata 接受對話、CSV、Excel、JSON、TXT／MD。封面僅 JPG／PNG，書名頁與版權頁僅指定檔名的 TXT／MD。先分類附件，metadata、封面、書名頁、版權頁不參與正文合併，也不因存在而跳過依序確認。
+| Input role | Supported input |
+|---|---|
+| Body text | TXT, Markdown, HTML/HTM, or CSV with an explicit body-text column |
+| Basic metadata | Conversation, CSV, XLSX, JSON, TXT, or Markdown |
+| Cover | JPEG or PNG with the accepted material filename |
+| Title/copyright page | TXT or Markdown with the accepted material filename |
 
-新書從檔名或卷首建議暫時名稱；在目標或名稱不明確時才確認書籍身分。最終正式書名於 metadata 階段確認，不要求使用者填寫技術 slug。slug 為小寫拼音／拉丁字母與連字號，碰撞加後綴；metadata 改書名不自動搬資料夾。
+Metadata and front-matter attachments never join the body-text merge. Their presence does not skip the ordered review checkpoints.
 
-## 多檔正文
+Suggest a temporary collection name from the filename or opening heading; ask about identity only when ambiguous. Confirm the final title during metadata review. Slugs are technical lowercase pinyin/Latin strings with hyphens and collision suffixes, not user fields. A metadata title change does not rename the folder.
 
-多個正文須先顯示並確認合併順序，優先採使用者順序、數字檔名、卷章標記，再採自然排序。保存來源副本、檔案檢查與順序／邊界記錄；保留唯一全文工作檔。來源檔邊界不等於正式文件或章節層級。
+## Multiple body files
 
-低階 CLI 僅接受一個 source。多檔先依確認順序呼叫 inspection、準備、擷取與清理函式，再建立單一工作全文與來源記錄，不捏造多檔 CLI 參數。
+Display and confirm merge order before combining files. Use the user's explicit order first, then numbered filenames, volume/chapter markers, and natural sorting as evidence. Preserve each source and its inspection, ordering, and boundary records, while keeping one editable full-text file. File boundaries do not automatically define document or chapter levels.
 
-## 章節辨識與審查
+The current CLI accepts one positional source, not a list. Do not invent a multi-file flag. Resolve and preserve multiple inputs before constructing the single working source used by the CLI; maintain provenance for every original rather than presenting a merged file as the only source.
 
-Markdown／HTML 明確標題為高信心，一致文字標題可為中信心；不清楚的標題或段落為低信心。信心僅用於說明辨識依據，**不取消任何信心等級的使用者確認步驟**。
+## Structural review
 
-辨識後必須另存章節目錄，在對話中提供目錄與全文工作檔連結，顯示推定結構，請使用者先核對。提示可以對話修正，或在全文中用 `#`、`##`、`###` 表示全書、主要章節、下層章節，並附具體 Markdown 範例。
+Explicit Markdown or extracted HTML headings give strong evidence; repeated plain-text markers may also identify chapters. Confidence describes the evidence only. Every new chapter version still requires the review and heading-edit guidance in [SKILL.md](../SKILL.md#1-prepare-text-and-review-chapters).
 
-收到修改後更新全文標題與目錄，再次列出結果供確認。原始檔不改動；不得建議修改原始檔卻只提供暫存檔連結。使用者明確確認現有章節版本後，才進入 metadata 階段。不能只交付信心報告就直接完成下游生成。
+Link both the editable full text and derived outline, show the inferred hierarchy, and wait for explicit confirmation. Apply changes to working headings, regenerate the outline, and review the new version. Do not modify the original or supply a temporary link while asking the user to edit a different file.

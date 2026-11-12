@@ -1,23 +1,35 @@
-# Text2Ebook 主題維護
+# Static reader theme
 
-網站繼續從本 skill 的 `themes/default/` 建立，保留原有白色背景、配色、字體、閱讀寬度與目錄配置。一般製書流程不自行重設主題，也不改用 Codex Desktop 外觀。共用 UI 修改集中於 skill 主題，重建後才套用至書籍。
+The website is generated from this Skill's `themes/default/`. Preserve its existing white background, colors, typography, reading width, spacing, and chapter layout. Ordinary book production does not apply a different design system or translate interface strings. Change shared templates/scripts centrally rather than modifying only one generated book.
 
-## 已確認的 UI 修改範圍
+## Reader behavior
 
-- 移除頂部「首頁／瀏覽／檢索」主選單。
-- 保留左側章節展開／收合按鈕與書名。
-- 右側原收合圖示改為尋找圖示；搜尋留在閱讀畫面。
-- 左側只顯示章節目錄；初次開啟時側欄預設收合；章節分支保留使用者展開狀態。桌面版在同一瀏覽分頁內依書籍保留側欄開關狀態，切換章節不自動收合；mobile 點選章節後收合側欄。各層分支可由點擊切換，側欄收合不重設分支狀態。
-- 右上尋找按鈕切換其下方的彈出搜尋框；輸入關鍵字後向下展開結果清單。
-- 再次開啟尋找時恢復前次關鍵字及結果。點選結果後關閉搜尋框，跳至該段落所在頁面並標示命中字詞；不開啟左側欄。
-- 閱讀或跳轉會更新目前章節的選取狀態；切換章節或重新開啟側欄時，自動展開通往目前章節的上層路徑並標示目前章節；其餘分支保留既有狀態。使用者手動收合目前分支後，不因同一章節的持續捲動而反覆展開。
+- Keep the chapter toggle and book title in the header; the title points to the reading entry. There is no top-level Home/Browse/Search navigation menu.
+- The right-hand Find button opens a search popover beneath the upper-right header area. Search stays in the reading view and never replaces the chapter sidebar.
+- Search uses the full-book script index. Reopening Find restores the previous query and results. Clicking a result closes the popover, opens the target paragraph, and highlights matches without opening the chapter sidebar.
+- Clicking outside the popover or pressing Escape closes it without clearing the query. Queries are stored per book in sessionStorage; query parameters support cross-page continuation when storage is unavailable.
+- The chapter sidebar starts closed. Desktop chapter navigation preserves its open/closed preference in the same browser tab; mobile chapter selection closes the sidebar, including same-page anchors. Resizing does not overwrite the desktop preference.
+- Branch expansion is saved independently from sidebar visibility. Navigating to a chapter or reopening the sidebar expands the path to the current chapter and highlights it, while preserving other branch states. Continued scrolling within the same chapter does not repeatedly undo a user's manual collapse.
 
-查詢依書籍保存於 sessionStorage；儲存不可用時仍可使用搜尋，跨頁查詢由 `?q=` 傳遞。點擊搜尋框外或按 Escape 關閉彈出框而不清除查詢。`search.html` 保留為閱讀器相容入口，不作獨立主畫面。
+## Routes and resources
 
-## 現有技術契約
+Preserve these actual files:
 
-保留 `index.html`、`read.html`、`search.html` 與每個 top-level division 的 `read/<id>.html`，子章節與段落為頁內錨點。現有驗證器依賴這些路由，不因移除導覽而刪掉檔案。`data/search_index.js` 以 classic script 先於搜尋程式載入，禁止改為 fetch JSON 而破壞直接開檔支援。
+```text
+index.html
+read.html
+search.html
+read/<top-level-division-id>.html
+assets/css/style.css
+assets/js/reader.js
+assets/js/reader-search.js
+data/search_index.js
+```
 
-模板由 `textoria_build_site.py` 從 canonical archive 渲染；大量 HTML、CSS、JavaScript 維持在主題檔案中。修改樣式不需要重新清理正文、辨識章節或生成其他匯出。主題載入、路由與搜尋載入方式的變更需驗證所有相關頁面及結果錨點。
+Nested divisions and paragraphs use page anchors. `search.html` is a compatibility entry to the same reader, not a separate main search screen. The classic `search_index.js` must load before the reader search UI; do not replace it with `fetch`-dependent JSON because direct-file reading must continue to work.
 
-交付時以 `read.html` 作為主要閱讀連結。首頁仍保留原有介紹頁，EPUB 以實際匯出檔案連結交付，模板未另設下載按鈕。
+`textoria_build_site.py` renders templates from the canonical archive. Standard output uses static HTML/CSS/JavaScript and requires no backend or frontend framework. Avoid adding one for ordinary book production.
+
+Deliver `read.html` as the primary reading file/URL. `index.html` remains the book introduction. The static theme currently does not render optional EPUB front matter or an EPUB download button. Deliver any generated EPUB through its actual file link in the conversation.
+
+Validate affected pages, relative resources, index loading, result anchors, and interaction state after relevant theme changes. Pure theme updates do not require re-cleaning the body or reopening unchanged chapter/metadata reviews.
