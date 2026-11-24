@@ -42,8 +42,8 @@ The optional database contains the eight canonical tables plus `paragraphs_fts`.
 Only these explicit checks require SQLite FTS5:
 
 ```text
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_runtime_check.py --check-sqlite
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_validate.py COLLECTION_ROOT --check-sqlite
+PYTHON "$SKILL_DIR/scripts/textoria_runtime_check.py" --check-sqlite
+PYTHON "$SKILL_DIR/scripts/textoria_validate.py" COLLECTION_ROOT --check-sqlite
 ```
 
 The second command also validates the website. Database checks include integrity, table/FTS counts, paragraph linkage, archive-count agreement, and a sample FTS query. Existing databases are neither required nor updated by normal website/EPUB tasks.

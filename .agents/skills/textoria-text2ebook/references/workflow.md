@@ -13,15 +13,15 @@ Inspect and preserve sources -> prepare working text and outline
 
 Use the [interactive choice interface](../SKILL.md#interactive-choices). Keep chapter, metadata, and material decisions separate. Existing explicit confirmations remain valid only while their corresponding content is unchanged.
 
-In command examples, `PYTHON` is the verified environment executable, `SOURCE` an actual input path, `PROJECT` the project root, and `COLLECTION_ROOT` the actual saved book directory. Replace symbolic arguments before execution. Technical review tokens come from command results, not from fields the user must fill in.
+In command examples, `PYTHON` is the verified environment executable. Set `SKILL_DIR` to the absolute path of the directory containing the loaded `SKILL.md`. Use an actual input path for `SOURCE`, the working project root for `PROJECT`, and the saved book directory for `COLLECTION_ROOT`. Replace symbolic arguments before execution. Technical review tokens come from command results, not from fields the user must fill in.
 
 ## Inspect and review chapters
 
 Check [runtime.md](runtime.md) and [text-cleaning.md](text-cleaning.md), then run:
 
 ```text
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py SOURCE --project-root PROJECT --task inspect_input
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py SOURCE --project-root PROJECT --collection-name NAME --task review_chapters
+PYTHON "$SKILL_DIR/scripts/textoria_build.py" SOURCE --project-root PROJECT --task inspect_input
+PYTHON "$SKILL_DIR/scripts/textoria_build.py" SOURCE --project-root PROJECT --collection-name NAME --task review_chapters
 ```
 
 The chapter-review command preserves the source, writes the editable full text and outline, and returns `needs_chapter_confirmation` with exit code 2 while awaiting review. This is a checkpoint, not a build failure. Convert its `links` paths into real clickable conversation links to both files. Show the detected outline and the heading example required by SKILL.md; ask the user to inspect hierarchy and order at every confidence level.
@@ -31,7 +31,7 @@ Unconfirmed chapters block canonical archive publication and downstream outputs.
 After explicit confirmation of the current version:
 
 ```text
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py --output COLLECTION_ROOT --task confirm_chapters --review-token REVIEW_TOKEN
+PYTHON "$SKILL_DIR/scripts/textoria_build.py" --output COLLECTION_ROOT --task confirm_chapters --review-token REVIEW_TOKEN
 ```
 
 This saves the approved structure and returns `chapters_confirmed` with metadata as the next step. It does not generate a website, SQLite database, or EPUB.
@@ -66,8 +66,8 @@ The downstream build commands also enforce these checkpoints; they are not short
 For a confirmed collection:
 
 ```text
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py --output COLLECTION_ROOT --task rebuild_site
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_validate.py COLLECTION_ROOT
+PYTHON "$SKILL_DIR/scripts/textoria_build.py" --output COLLECTION_ROOT --task rebuild_site
+PYTHON "$SKILL_DIR/scripts/textoria_validate.py" COLLECTION_ROOT
 ```
 
 Website generation, browser search, and default validation read `archive.json`, not SQLite. Validation checks archive structure, expected chapter pages, relative resources, search-index paragraph IDs and text, script order, and result anchors. The browser index is a classic script so both HTTP and direct-file reading work. See [theme-system.md](theme-system.md).

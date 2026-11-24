@@ -42,19 +42,31 @@ python3 -m venv .textoria-text2ebook/venv
 
 The commands above are for a developer deliberately setting up the checkout. During guided Skill execution, obtain explicit approval before installing missing dependencies. Use an existing compatible environment when available. Java and the complete EPUBCheck distribution are required only for official EPUBCheck verification, not for internal EPUB validation.
 
-### Install the Skill through Codex
+## Install and use the Skill
 
-Open the target working project in Codex and submit:
+Install the Skill once into `~/.agents/skills/` to use it across Codex projects. Access to the private repository is required for both installation methods.
+
+### Install through Codex
+
+Send this prompt in a Codex chat:
 
 ```text
-$skill-installer --repo cclintw/textoria-text2ebook --path .agents/skills/textoria-text2ebook --dest .agents/skills
+$skill-installer --repo cclintw/textoria-text2ebook --path .agents/skills/textoria-text2ebook --dest "$HOME/.agents/skills"
 ```
-
-Start using `$textoria-text2ebook` on the next turn. Private repository access is required.
 
 ### Install manually
 
-Open the [repository](https://github.com/cclintw/textoria-text2ebook), choose **Code → Download ZIP**, and extract it. Copy the complete `.agents/skills/textoria-text2ebook/` directory into the target project's `.agents/skills/`, including scripts, references, themes, interface metadata, and license. Enable hidden-file visibility if necessary. Compare an existing destination before replacing it.
+Open the [repository](https://github.com/cclintw/textoria-text2ebook), choose **Code → Download ZIP**, and extract it. Copy the complete `.agents/skills/textoria-text2ebook/` directory into `~/.agents/skills/` so the entry file is `~/.agents/skills/textoria-text2ebook/SKILL.md`. Enable hidden-file visibility if necessary. Compare an existing installation before replacing it.
+
+### Invoke the Skill
+
+Open the project where the book should be saved. In the Codex chat, type `$textoria-text2ebook`, select the Skill, and attach the source file or provide its path. For example:
+
+```text
+$textoria-text2ebook Convert manuscript.md to an EPUB.
+```
+
+If the Skill does not appear after installation, restart Codex.
 
 ## Interfaces and maintenance contracts
 

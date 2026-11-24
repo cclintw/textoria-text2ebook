@@ -29,6 +29,8 @@ Accept `.txt`, `.md`, `.html`, `.htm`, and `.csv` as body text. Metadata and opt
 
 ## Preparation and persistence
 
+Use the directory containing this loaded `SKILL.md` as `SKILL_DIR` in command examples. Set it to the actual absolute path before running the examples. Run commands from the working project and use its project root for `--project-root` when specified. The Skill directory supplies scripts and themes. The working project supplies inputs, the runtime, and saved collections.
+
 New books belong in `textoria-text2ebook/collections/<slug>/`; the default runtime is `.textoria-text2ebook/`. Read [workflow.md](references/workflow.md), [file-contracts.md](references/file-contracts.md), and [runtime.md](references/runtime.md) before processing. Use [input-resolution.md](references/input-resolution.md) for ambiguous inputs or multiple files, and [text-cleaning.md](references/text-cleaning.md) for text preparation.
 
 Use an existing compatible environment without reinstalling it. Request approval before installing missing dependencies or creating an environment. Keep source copies, editable text, metadata, supplied assets, and confirmation state. Rebuild only affected outputs.

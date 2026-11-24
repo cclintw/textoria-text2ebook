@@ -30,9 +30,9 @@ Do not translate these stored roles during a documentation edit. `extra` holds o
 Use the verified Python executable for `PYTHON`, the actual collection for `COLLECTION_ROOT`, and real file paths for import arguments:
 
 ```text
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py --output COLLECTION_ROOT --task review_metadata
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py --output COLLECTION_ROOT --task edit_metadata --metadata-patch '{"title":"Example Work","author":"Example Author"}'
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py --output COLLECTION_ROOT --task edit_metadata --metadata-file METADATA_FILE
+PYTHON "$SKILL_DIR/scripts/textoria_build.py" --output COLLECTION_ROOT --task review_metadata
+PYTHON "$SKILL_DIR/scripts/textoria_build.py" --output COLLECTION_ROOT --task edit_metadata --metadata-patch '{"title":"Example Work","author":"Example Author"}'
+PYTHON "$SKILL_DIR/scripts/textoria_build.py" --output COLLECTION_ROOT --task edit_metadata --metadata-file METADATA_FILE
 ```
 
 The example book and author are fictional examples, not suggested values for a real source. Use `--metadata-delete` with the actual field to remove a value.
@@ -42,7 +42,7 @@ A pending review returns `needs_metadata_confirmation`, `metadata_file`, values,
 After the user explicitly confirms the displayed version:
 
 ```text
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py --output COLLECTION_ROOT --task confirm_metadata --metadata-token METADATA_TOKEN
+PYTHON "$SKILL_DIR/scripts/textoria_build.py" --output COLLECTION_ROOT --task confirm_metadata --metadata-token METADATA_TOKEN
 ```
 
 Do not combine imports/patches and confirmation in one call. Direct file edits also require showing the new values for approval; old tokens cannot approve changed values. On `metadata_confirmed`, the archive is synchronized and materials become the next step. This command does not receive materials or generate outputs.

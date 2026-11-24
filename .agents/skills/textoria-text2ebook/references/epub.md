@@ -5,7 +5,7 @@
 Use confirmed text, chapters, metadata, and material decisions. Generation commands do not bypass the review checkpoints. Replace `PYTHON` with the verified interpreter and `COLLECTION_ROOT` with the actual collection path:
 
 ```text
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py --output COLLECTION_ROOT --task build_epub
+PYTHON "$SKILL_DIR/scripts/textoria_build.py" --output COLLECTION_ROOT --task build_epub
 ```
 
 `build_epub` generates only EPUB. `build_fulltext_archive` generates the website and, after successful website checks, EPUB. `rebuild_site` generates only the website. All use the canonical archive without creating SQLite.
@@ -30,13 +30,13 @@ If tools are already available, use them. New installation requires the [runtime
 To require official checking during generation:
 
 ```text
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py --output COLLECTION_ROOT --task build_epub --require-epubcheck
+PYTHON "$SKILL_DIR/scripts/textoria_build.py" --output COLLECTION_ROOT --task build_epub --require-epubcheck
 ```
 
 To validate an existing ebook independently:
 
 ```text
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_validate_epub.py BOOK.epub --project-root PROJECT --require-epubcheck
+PYTHON "$SKILL_DIR/scripts/textoria_validate_epub.py" BOOK.epub --project-root PROJECT --require-epubcheck
 ```
 
 Internal checks cover packaging, XML, resource declarations/references, reading order, navigation, supported image formats, and paragraph completeness. Official checker output and compliance status are reported separately. `compliance_verified` is true only after successful EPUBCheck execution. An internally validated ebook may be produced without configured EPUBCheck when it is not required, but report that official compliance was not verified. Never claim full EPUB 3 compliance from internal checks alone.

@@ -15,10 +15,10 @@ Prefer an existing compatible `.textoria-text2ebook/venv/`. If absent, a verifie
 
 ## Check before processing
 
-Use the actual selected environment executable in place of `PYTHON`:
+Replace `PYTHON` with the selected environment executable and set `SKILL_DIR` to the absolute path of the directory containing the loaded `SKILL.md`.
 
 ```text
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_runtime_check.py
+PYTHON "$SKILL_DIR/scripts/textoria_runtime_check.py"
 ```
 
 A ready environment needs no further permission. The check reports Python and package availability; it does not create an environment, install packages, or write a separate runtime log. Only for a specifically authorized database task, add `--check-sqlite` to require SQLite FTS5.

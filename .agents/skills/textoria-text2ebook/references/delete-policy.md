@@ -25,4 +25,4 @@ Do not create an automatic backup unless requested. State that no automatic back
 
 Show the collection name and full path, exactly which files/folders will be removed, which sources and manual assets remain, and the backup behavior. Ask for the explicit phrase `Delete <collection_path>`, substituting the actual full path in the prompt. Do not accept a vague yes as confirmation of an unbounded target.
 
-Execute only the displayed and confirmed plan. For whole-collection deletion, verify the path is the selected collection directory, preserve any required source copies, remove that directory, and update the appropriate registry entry. Do not delete the project root, `.agents/skills/`, `.textoria-text2ebook/`, another collection, or source files outside the confirmed scope.
+Execute only the displayed and confirmed plan. For whole-collection deletion, verify the path is the selected collection directory, preserve any required source copies, remove that directory, and update the appropriate registry entry. Do not delete the project root, any Skill installation, `.textoria-text2ebook/`, another collection, or source files outside the confirmed scope.

@@ -19,8 +19,8 @@ Existing assets remain available even if not attached again. Show saved choices 
 Use the verified interpreter for `PYTHON` and actual paths for the other symbolic arguments:
 
 ```text
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py --output COLLECTION_ROOT --task review_materials
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py --output COLLECTION_ROOT --task receive_materials --material COVER_PATH --material TITLEPAGE_PATH --material COPYRIGHT_PATH
+PYTHON "$SKILL_DIR/scripts/textoria_build.py" --output COLLECTION_ROOT --task review_materials
+PYTHON "$SKILL_DIR/scripts/textoria_build.py" --output COLLECTION_ROOT --task receive_materials --material COVER_PATH --material TITLEPAGE_PATH --material COPYRIGHT_PATH
 ```
 
 Pass only actually supplied files; omit unused arguments. The command validates the entire batch before saving copies under `materials/`. Preserve original bytes, formats, names, source/saved paths, SHA-256, and inspections. A same-name changed file gets a versioned saved name rather than overwriting a copy.
@@ -32,7 +32,7 @@ Pass only actually supplied files; omit unused arguments. The command validates 
 After explicit completion and successful inspection:
 
 ```text
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py --output COLLECTION_ROOT --task confirm_materials --materials-token MATERIALS_TOKEN
+PYTHON "$SKILL_DIR/scripts/textoria_build.py" --output COLLECTION_ROOT --task confirm_materials --materials-token MATERIALS_TOKEN
 ```
 
 Use the current token, bound to the saved files and metadata. If the user has clearly said to finish with the supplied batch, do not add another equivalent question. If completion is unclear, keep it pending. No supplied files plus a completion statement is not an implicit skip.
@@ -40,7 +40,7 @@ Use the current token, bound to the saved files and metadata. If the user has cl
 On an explicit skip:
 
 ```text
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py --output COLLECTION_ROOT --task skip_materials
+PYTHON "$SKILL_DIR/scripts/textoria_build.py" --output COLLECTION_ROOT --task skip_materials
 ```
 
 A first-time skip creates no empty material folder. On an existing collection it means no additions and retains saved choices; it does not remove pages or assets. Partial receipt with explicit completion omits other missing items. Confirmation saves the selection but does not generate an EPUB by itself.
@@ -50,7 +50,7 @@ A first-time skip creates no empty material folder. On an existing collection it
 A changed choice requires an explicit replacement instruction, for example:
 
 ```text
-PYTHON .agents/skills/textoria-text2ebook/scripts/textoria_build.py --output COLLECTION_ROOT --task receive_materials --material COVER_PATH --replace-material cover
+PYTHON "$SKILL_DIR/scripts/textoria_build.py" --output COLLECTION_ROOT --task receive_materials --material COVER_PATH --replace-material cover
 ```
 
 Other replacement keys are `titlepage` and `copyright`. Preserve old copies and selection history.
